@@ -1,25 +1,44 @@
-const PORT = process.env.PORT || 3000;
-const app = require('express')()
-const http = require('http').createServer(app)
-const io = require('socket.io')(http);
-app.get('/', (req, res) => {
-    res.send("Node Server is running. Yay!!")
-})
-io.on('connection', socket => {
-    chatID = socket.handshake.query.chatID
-    socket.join(chatID)
-    socket.on('disconnect', () => {
-        socket.leave(chatID)
-    })
-    socket.on('send_message', message => {
-        receiverChatID = message.receiverChatID
-        senderChatID = message.senderChatID
-        content = message.content
-        socket.in(receiverChatID).emit('receive_message', {
-            'content': content,
-            'senderChatID': senderChatID,
-            'receiverChatID':receiverChatID,
-        })
-    })
+var http = require('http');
+var socketIO = require('socket.io');
+var port =  process.env.PORT || 3000;;
+var users = [];
+var server = http.createServer().listen(port, function () {
+    console.log('Kết nối với server với port: ' + port);
 });
-http.listen(PORT)
+const io =  socketIO(server);
+// io = socketIO.listen(server);
+io.sockets.on('connection', function (socket) {
+    socket.on('checkonline', function (user) {
+        socket.nickname = user.idUser;
+        socket.id = user.idUser;
+        users.push(user);
+        console.log(user.tenUser + ' đã online.');
+        updateNickNames();
+    });
+    socket.on('comment', function (data) {
+        socket.emit('comment', data);
+        socket.broadcast.emit('comment', data);
+    });
+    socket.on('disconnection', function (data) {
+        socket.broadcast.emit('info', '............................');
+    });
+
+    socket.on('new_event', function (data) {
+        socket.broadcast.emit('new_event', data);
+        socket.emit('new_event', data);
+    });
+    function updateNickNames() {
+        io.sockets.emit('checkonline', users);
+    }
+    ;
+    socket.on('disconnect', function (data) {
+        for (var i = 0; i < users.length; i++) {
+            var user = users[i];
+            if (user.idUser === socket.nickname) {
+                users.splice(i, 1);
+            }
+        }
+        updateNickNames();
+    });
+
+});
