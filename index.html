@@ -4,19 +4,23 @@
     <script>
       let socket = io();
       let el;
-
+      let btn;
       socket.on("time", (timeString) => {
         el = document.getElementById("server-time");
         el.innerHTML = "Server time: " + timeString;
       });
-      socket.on("notify", (timeString) => {
-        el = document.getElementById("event-notify");
-        el.innerHTML = "Server time: " + timeString;
+      socket.on("notify", (data) => {
+        document.getElementById("event-notify").innerHTML = data;
       });
+
+      function myFunction() {
+        socket.emit("notify", "Good morning");
+      }
     </script>
   </head>
   <body>
     <p id="server-time"></p>
     <p id="event-notify"></p>
+    <button id="btn" onclick="myFunction()">Click nè</button>
   </body>
 </html>
