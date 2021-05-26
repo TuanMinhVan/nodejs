@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
   });
   socket.on('join',  (user) => {
     userId = user;
-    users.push(user);
+    users.push(user[0]);
     socket.emit('join',users);
  });
   socket.on('call',(data) => {
