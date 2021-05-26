@@ -1,10 +1,17 @@
-const app = require('express');
-const httpServer = require('http').createServer(app);
-const io = require('socket.io')(httpServer, {
+const express = require('express');
+const socketIO = require('socket.io');
+const httpServer = require('http').createServer(express);
+const PORT = process.env.PORT || 3000;
+
+const server = express()
+  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
+  .listen(PORT, () => console.log(`Listening on ${PORT}`));    
+
+const io = socketIO(server, {
     cors: true,
     origins: ["*"]
 });
-
+const INDEX = '/index.html';
 const { createGame } = require('./util/words');
 
 io.on("connection", (socket) => {
@@ -28,7 +35,5 @@ io.on("connection", (socket) => {
     })
 });
 
-const PORT = process.env.PORT || 3000;
-
-httpServer.listen(PORT, () => console.log('Server is running on port ' + PORT));
+// httpServer.listen(PORT, () => console.log('Server is running on port ' + PORT));
 setInterval(() => io.emit('time', new Date().toTimeString()), 5000);
