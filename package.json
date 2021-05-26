@@ -1,16 +1,24 @@
 {
-  "name": "backend",
+  "name": "agrich",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index",
-    "start": "node index.js"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js",
+    "dev": "nodeon index.js"
   },
-  "author": "Sander Buchheim",
-  "license": "ISC",
+  "keywords": [
+    "example",
+    "heroku"
+  ],
+  "author": "",
   "dependencies": {
     "express": "^4.17.1",
-    "socket.io": "^3.0.4"
-  }
+    "socket.io": "^2.3.0"
+  },
+  "engines": {
+    "node": "14.x"
+  },
+  "license": "ISC"
 }
