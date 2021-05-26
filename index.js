@@ -20,8 +20,8 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('notify',data);
   });
   socket.on('join',  (user) => {
-    userId = user[0];
-    users.push(user[0]);
+    userId = user;
+    users.push(userId);
     socket.emit('join',users);
  });
   socket.on('call',(data) => {
