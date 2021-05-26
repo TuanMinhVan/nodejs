@@ -17,9 +17,9 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => console.log('Client disconnected'));
 });
 
-io.on('notify', function (data) {
-  io.emit('notify', data);
-  io.broadcast.emit('notify', data);
+io.on('notify', (data)=> {
+  io.emit('notify', {'name':'thông báo'});
+  io.broadcast.emit('notify', {'name':'thông báo'});
 });
 
 setInterval(() => io.emit('time', new Date().toTimeString()), 5000);
