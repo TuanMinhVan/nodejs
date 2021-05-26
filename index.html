@@ -12,7 +12,9 @@
       socket.on("notify", (data) => {
         document.getElementById("event-notify").innerHTML = data;
       });
-
+      socket.on("join", (data) => {
+        document.getElementById("event-join").innerHTML = data;
+      });
       function myFunction() {
         socket.emit("notify", "Good morning");
       }
@@ -21,6 +23,7 @@
   <body>
     <p id="server-time"></p>
     <p id="event-notify"></p>
-    <button id="btn" onclick="myFunction()">Click nè</button>
+    <p id="event-join"></p>
+    <button onclick="myFunction()">Click nè</button>
   </body>
 </html>
