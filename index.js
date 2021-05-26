@@ -19,5 +19,7 @@ io.on('connection', (socket) => {
     socket.emit('notify', new Date().toTimeString());
   });
 });
-
+io.on('notify',()=>{
+  io.emit('notify', new Date().toTimeString());
+});
 setInterval(() => io.emit('time', new Date().toTimeString()), 5000);
