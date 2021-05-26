@@ -18,15 +18,15 @@ io.on('connection', (socket) => {
   socket.on('notify',(data)=>{
     socket.broadcast.emit('notify',data);
   });
-  socket.on('join', function (user) {
+  socket.on('join',  (user) => {
     socket.userId = user;
     users.push(user);
     socket.broadcast.emit('join',users);
  });
-  socket.on('call',(data)=>{
+  socket.on('call',(data) => {
     socket.broadcast.emit('call',data);
   });
-  socket.on('unCall',(data)=>{
+  socket.on('unCall',(data) => {
     socket.broadcast.emit('unCall',data);
   });
 
