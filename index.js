@@ -6,7 +6,6 @@ const socketIO = require('socket.io');
 const PORT = process.env.PORT || 3000;
 const INDEX = '/index.html';
 var users = [];
-var userId;
 const server = express()
   .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
@@ -19,8 +18,8 @@ io.on('connection', (socket) => {
   socket.on('notify',(data)=>{
     socket.broadcast.emit('notify',data);
   });
-  socket.on('join',  (user) => {
-    userId = user;
+  socket.on('join',  (userId) => {
+    socket.nickname = userId;
     users.push(userId);
     socket.emit('join',users);
  });
@@ -34,7 +33,7 @@ io.on('connection', (socket) => {
   socket.on('disconnect',()=>{
       for (var i = 0; i < users.length; i++) {
         var user = users[i];
-        if (user === userId) {
+        if (user === socket.nickname) {
             users.splice(i, 1);
         }
     }
