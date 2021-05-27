@@ -29,7 +29,9 @@ io.on('connection', (socket) => {
   socket.on('unCall',(data) => {
     socket.broadcast.emit('unCall',data);
   });
-
+  socket.on('acceptCall',(data) => {
+    socket.broadcast.emit('acceptCall',data);
+  });
   socket.on('disconnect',()=>{
       for (var i = 0; i < users.length; i++) {
         var user = users[i];
