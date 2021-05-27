@@ -26,6 +26,9 @@ io.on('connection', (socket) => {
   socket.on('call',(data) => {
     socket.broadcast.emit('call',data);
   });
+  socket.on('endCall',(data) => {
+    socket.broadcast.emit('endCall',data);
+  });
   socket.on('unCall',(data) => {
     socket.broadcast.emit('unCall',data);
   });
