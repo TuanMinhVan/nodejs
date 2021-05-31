@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
   socket.on('join',  (userId) => {
     socket.nickname = userId;
     users.push(userId);
-    socket.emit('join',users);
+    socket.emit('join',users.every(x => x == userId));
  });
   socket.on('call',(data) => {
     socket.broadcast.emit('call',data);
