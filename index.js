@@ -8,7 +8,7 @@ const INDEX = '/index.html';
 var users = [];
 const server = express()
   .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT,'192.168.1.150', () => console.log(`Listening on ${PORT}`));
+  .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 const io = socketIO(server);
 
