@@ -1,47 +1,56 @@
-'use strict';
+let port = process.env.PORT || 1991;
 
-const express = require('express');
-const socketIO = require('socket.io');
+let IO = require("socket.io")(port, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+});
 
-const PORT = process.env.PORT || 3000;
-const INDEX = '/index.html';
-var users = [];
-const server = express()
-  .use((req, res) => res.sendFile(INDEX, { root: __dirname }))
-  .listen(PORT, () => console.log(`Listening on ${PORT}`));
+IO.use((socket, next) => {
+  if (socket.handshake.query) {
+    let callerId = socket.handshake.query.callerId;
+    socket.user = callerId;
+    next();
+  }
+});
 
-const io = socketIO(server);
+IO.on("connection", (socket) => {
+  console.log(socket.user, "Connected");
+  socket.join(socket.user);
 
-io.on('connection', (socket) => {
-  console.log('Client connected');
-  socket.on('disconnect', () => console.log('Client disconnected'));
-  socket.on('notify',(data)=>{
-    socket.broadcast.emit('notify',data);
+  socket.on("makeCall", (data) => {
+    let calleeId = data.calleeId;
+    let sdpOffer = data.sdpOffer;
+
+    socket.to(calleeId).emit("newCall", {
+      callerId: socket.user,
+      sdpOffer: sdpOffer,
+    });
   });
-  socket.on('join',  (userId) => {
-    socket.nickname = userId;
-    users.push(userId);
-    socket.emit('join',users.every(x => x == userId));
- });
-  socket.on('call',(data) => {
-    socket.broadcast.emit('call',data);
+
+  socket.on("endCall", (data) => {
+    let callerId = data.callerId;
+    socket.to(callerId).emit("callEnded");
   });
-  socket.on('endCall',(data) => {
-    socket.broadcast.emit('endCall',data);
+
+  socket.on("answerCall", (data) => {
+    let callerId = data.callerId;
+    let sdpAnswer = data.sdpAnswer;
+
+    socket.to(callerId).emit("callAnswered", {
+      callee: socket.user,
+      sdpAnswer: sdpAnswer,
+    });
   });
-  socket.on('unCall',(data) => {
-    socket.broadcast.emit('unCall',data);
-  });
-  socket.on('acceptCall',(data) => {
-    socket.broadcast.emit('acceptCall',data);
-  });
-  socket.on('disconnect',()=>{
-      for (var i = 0; i < users.length; i++) {
-        var user = users[i];
-        if (user === socket.nickname) {
-            users.splice(i, 1);
-        }
-    }
+
+  socket.on("IceCandidate", (data) => {
+    let calleeId = data.calleeId;
+    let iceCandidate = data.iceCandidate;
+
+    socket.to(calleeId).emit("IceCandidate", {
+      sender: socket.user,
+      iceCandidate: iceCandidate,
+    });
   });
 });
-setInterval(() => io.emit('time', new Date().toTimeString()), 1000);
